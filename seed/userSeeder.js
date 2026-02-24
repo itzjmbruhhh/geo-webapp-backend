@@ -5,16 +5,26 @@ const User = require('../models/User');
 
 mongoose.connect(process.env.MONGODB_URI)
 
-const seedUser = async () => {
+const seedUsers = async () => {
     const hashedPassword = await bcrypt.hash('password123', 10);
 
-    await User.create({
-        email: "test@example.com",
-        password: hashedPassword,
-    });
+    await User.create([
+        {
+            email: "test@example.com",
+            password: hashedPassword,
+        },
+        {
+            email: "user2@example.com",
+            password: hashedPassword,
+        },
+        {
+            email: "user3@example.com",
+            password: hashedPassword,
+        },
+    ]);
 
-    console.log("User seeded");
+    console.log("Users seeded");
     process.exit();
 };
 
-seedUser();
+seedUsers();
