@@ -4,11 +4,11 @@ const router = express.Router();
 const History = require('../models/History'); // History model for database operations
 const authMiddleware = require('../middleware/authMiddleware'); // JWT authentication middleware
 
-/*
+/**
  * POST /
  * Save a geolocation search to user's history
  * Protected route - requires valid JWT token
-*/
+ */
 router.post('/', authMiddleware, async (req, res) => {
     try {
         // Extract geolocation data from request body
@@ -41,16 +41,28 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Get user History
+/**
+ * GET /
+ * Retrieve all geolocation search history for the authenticated user
+ * Protected route - requires valid JWT token
+ */
 router.get('/', authMiddleware, async (req, res) => {
     try {
+        // Query database for all history records belonging to the authenticated user
+        // Sort by createdAt in descending order (-1) to show most recent searches first
         const histories = await History.find({
             userId: req.user.id
         }).sort({ createdAt: -1 });
 
+        // Return the array of history records as JSON response
         res.json(histories)
     } catch (error) {
+        // Log error details to console for debugging purposes
         console.error("Get History Error", error);
+        // Return 500 Internal Server Error with descriptive error message
         res.status(500).json({ message: "Server error:" + error.message });
     }
 });
+
+// Export the router to be mounted in the main application (e.g., app.use('/history', historyRouter))
+module.exports = router;
