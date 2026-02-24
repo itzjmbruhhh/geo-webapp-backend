@@ -64,23 +64,38 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Delete multiple histories
+/**
+ * DELETE /
+ * Delete multiple geolocation search history records for the authenticated user
+ * Protected route - requires valid JWT token
+ */
 router.delete('/', authMiddleware, async (req, res) => {
     try {
+        // Extract array of history IDs to delete from request body
         const { ids } = req.body;
 
+        // Validate that ids is provided and is an array
         if (!ids || !Array.isArray(ids)) {
             return res.status(400).json({ message: "IDs array required" });
         }
 
+        // Delete all history records that match the provided IDs
+        // $in operator checks if _id is in the ids array
+        // Also ensures userId matches to prevent users from deleting other users' records
         await History.deleteMany({
             _id: { $in: ids },
             userId: req.user.id
         });
 
+        // Return success message after deletion
         res.json({ message: "Deleted successfully" });
     } catch (error) {
+        // Log error details to console for debugging purposes
         console.error("Delete History Error", error);
+        // Return 500 Internal Server Error with descriptive error message
         res.status(500).json({ message: "Server error:" + error.message });
     }
 })
+
+// Export the router to be mounted in the main application (e.g., app.use('/history', historyRouter))
+module.exports = router;
