@@ -64,5 +64,23 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Export the router to be mounted in the main application (e.g., app.use('/history', historyRouter))
-module.exports = router;
+// Delete multiple histories
+router.delete('/', authMiddleware, async (req, res) => {
+    try {
+        const { ids } = req.body;
+
+        if (!ids || !Array.isArray(ids)) {
+            return res.status(400).json({ message: "IDs array required" });
+        }
+
+        await History.deleteMany({
+            _id: { $in: ids },
+            userId: req.user.id
+        });
+
+        res.json({ message: "Deleted successfully" });
+    } catch (error) {
+        console.error("Delete History Error", error);
+        res.status(500).json({ message: "Server error:" + error.message });
+    }
+})
