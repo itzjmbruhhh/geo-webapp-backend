@@ -1,23 +1,31 @@
+// Load environment variables from .env file
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
 
+// Import required dependencies
+const express = require('express'); // Web framework for Node.js
+const cors = require('cors'); // Enable Cross-Origin Resource Sharing
+const connectDB = require('./config/db'); // Database connection function
+
+// Initialize Express application
 const app = express();
 
-// Connect Database
+// Connect to MongoDB database
 connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Middleware setup
+app.use(cors()); // Enable CORS for all routes to allow frontend communication
+app.use(express.json()); // Parse incoming JSON request bodies
 
-// Test route
+// Test route to verify API is running
 app.get('/', (req, res) => {
     res.send('API is running');
 });
 
-// Start server
+// Mount API routes
+app.use('/auth', require('./routes/auth')); // Authentication routes
+app.use('/history', require('./routes/history')); // History routes
+
+// Start the Express server
 const PORT = 8000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
