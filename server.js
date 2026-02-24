@@ -26,7 +26,10 @@ app.use('/auth', require('./routes/auth')); // Authentication routes
 app.use('/history', require('./routes/history')); // History routes
 
 // Start the Express server
-const PORT = 8000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 8000;
+
+if (process.env.NODE_ENV !== "production") {
+    app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+}
+
+module.exports = app;
