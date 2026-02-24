@@ -8,7 +8,7 @@ const authMiddleware = require('../middleware/authMiddleware'); // JWT authentic
  * POST /
  * Save a geolocation search to user's history
  * Protected route - requires valid JWT token
- */
+*/
 router.post('/', authMiddleware, async (req, res) => {
     try {
         // Extract geolocation data from request body
@@ -37,6 +37,20 @@ router.post('/', authMiddleware, async (req, res) => {
         // Log error details to console for debugging
         console.error("Save History Error", error);
         // Return 500 Internal Server Error with error message
+        res.status(500).json({ message: "Server error:" + error.message });
+    }
+});
+
+// Get user History
+router.get('/', authMiddleware, async (req, res) => {
+    try {
+        const histories = await History.find({
+            userId: req.user.id
+        }).sort({ createdAt: -1 });
+
+        res.json(histories)
+    } catch (error) {
+        console.error("Get History Error", error);
         res.status(500).json({ message: "Server error:" + error.message });
     }
 });
