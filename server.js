@@ -13,7 +13,13 @@ const app = express();
 connectDB();
 
 // Middleware setup
-app.use(cors()); // Enable CORS for all routes to allow frontend communication
+// Configure CORS to only allow requests from SITE_URL
+const corsOptions = {
+    origin: process.env.SITE_URL, // || 'http://localhost:3000',
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions)); // Enable CORS only for the specified origin
 app.use(express.json()); // Parse incoming JSON request bodies
 
 // Test route to verify API is running
