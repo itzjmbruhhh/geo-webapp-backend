@@ -22,9 +22,13 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Enable CORS only for the specified origin
 app.use(express.json()); // Parse incoming JSON request bodies
 
-// Test route to verify API is running
-app.get('/', (req, res) => {
-    res.send('API is running');
+// Test route to verify if API is running
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        uptime: process.uptime(),
+        timestamp: Date.now()
+    });
 });
 
 // Mount API routes
